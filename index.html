@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your Favorite Game</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #ecf0f1;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+      transition: background-color 0.5s ease;
+    }
+
+    .container {
+      text-align: center;
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 2px solid #3498db;
+      border-radius: 5px;
+      background-color: #ecf0f1;
+    }
+
+    .warning-message {
+      display: none;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      background-color: #e74c3c;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+      animation: shake 0.5s ease-in-out infinite, flashBackground 1s ease-in-out infinite;
+      transform-origin: center;
+      position: relative;
+    }
+
+    /* Shake animation for the warning message */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      50% { transform: translateX(10px); }
+      75% { transform: translateX(-10px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* Flashing background animation for danger effect */
+    @keyframes flashBackground {
+      0% { background-color: #e74c3c; }
+      50% { background-color: #c0392b; }
+      100% { background-color: #e74c3c; }
+    }
+
+    /* Loading bar */
+    .loading-bar-container {
+      width: 100%;
+      height: 20px;
+      background-color: #ecf0f1;
+      border-radius: 5px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .loading-bar {
+      height: 100%;
+      width: 0;
+      background-color: #3498db;
+      border-radius: 5px;
+      transition: width 0.1s ease;
+    }
+
+    /* Warning siren style */
+    .warning-siren {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 30px;
+      background-color: #f39c12;
+      border-radius: 50%;
+      animation: pulseSiren 1.5s infinite;
+    }
+
+    @keyframes pulseSiren {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.5); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    /* Stars effect */
+    .star {
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background-color: yellow;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      transform: translateX(-50%);
+      animation: twinkle 1.5s infinite;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    /* Flashing lights effect on the background */
+    .flashing-lights {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 0, 0, 0.5);
+      z-index: -1;
+      animation: flashLights 1s infinite;
+    }
+
+    @keyframes flashLights {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>What's Your Favorite Game?</h1>
+    <select id="gameSelection">
+      <option value="">Select a game...</option>
+      <option value="league_of_legends">League of Legends</option>
+      <option value="fortnite">Fortnite</option>
+      <option value="minecraft">Minecraft</option>
+    </select>
+
+    <!-- Loading bar -->
+    <div class="loading-bar-container" id="loadingBarContainer">
+      <div class="loading-bar" id="loadingBar"></div>
+    </div>
+
+    <div class="warning-message" id="warningMessage">
+      <p>Go take a shower!</p>
+    </div>
+
+    <!-- Stars and warning siren -->
+    <div class="star"></div>
+    <div class="star" style="top: 50%; left: 20%;"></div>
+    <div class="star" style="top: 70%; left: 80%;"></div>
+    <div class="warning-siren"></div>
+
+    <!-- Flashing lights -->
+    <div class="flashing-lights" id="flashingLights"></div>
+  </div>
+
+  <script>
+    const gameSelection = document.getElementById('gameSelection');
+    const warningMessage = document.getElementById('warningMessage');
+    const loadingBarContainer = document.getElementById('loadingBarContainer');
+    const loadingBar = document.getElementById('loadingBar');
+    const warningSiren = document.querySelector('.warning-siren');
+    const flashingLights = document.getElementById('flashingLights');
+    let loadingInterval;
+
+    gameSelection.addEventListener('change', () => {
+      if (gameSelection.value === 'league_of_legends') {
+        // Show loading bar
+        loadingBarContainer.style.display = 'block';
+        warningMessage.style.display = 'none';
+        warningSiren.style.display = 'block'; // Show warning siren
+        flashingLights.style.display = 'block'; // Show flashing lights
+        document.body.style.backgroundColor = '#e74c3c'; // Change background to red (alert mode)
+        
+        let progress = 0;
+
+        // Start loading
+        loadingInterval = setInterval(() => {
+          progress += 1;
+          loadingBar.style.width = progress + '%';
+
+          if (progress === 100) {
+            clearInterval(loadingInterval);
+            warningMessage.style.display = 'block'; // Show warning message
+          }
+        }, 100); // Update every 100ms to simulate 10 seconds for 100%
+
+      } else {
+        // Hide loading bar and warning message if not League of Legends
+        loadingBarContainer.style.display = 'none';
+        warningMessage.style.display = 'none';
+        warningSiren.style.display = 'none'; // Hide warning siren
+        flashingLights.style.display = 'none'; // Hide flashing lights
+        document.body.style.backgroundColor = '#ecf0f1'; // Reset background to normal
+      }
+    });
+  </script>
+
+</body>
+</html>
